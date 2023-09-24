@@ -64,9 +64,11 @@ func (r *Rat) CreateContainer(components ...fyne.CanvasObject) (*fyne.Container,
     return content, content2, contentFinal
 }
 
-func (r *Rat) PreStart() {
+func (r *Rat) PreStart(e chan <- bool) {
 	r.Button.Enable()
     r.counterText.Show()
+    e <- true
+    close(e)
 }
 
 func (r *Rat) StartMove (container *fyne.Container) {

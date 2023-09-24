@@ -23,6 +23,7 @@ func NewIntroScene(window fyne.Window) *MainScene {
 
 var startButton *widget.Button
 func (s *MainScene) LoadGame () {
+	end := make(chan bool)
 	background := canvas.NewImageFromURI(storage.NewFileURI("./assets/fondo.jpeg"))
 	background.Resize(fyne.NewSize(800,600))
 
@@ -36,16 +37,14 @@ func (s *MainScene) LoadGame () {
 	img.Resize(fyne.NewSize(50,40))
 
 	ratModel := models.NewRatModel(s.window)
-    // Crear el contenedor utilizando el modelo y agregar otros componentes si es necesario
     rat, ratPoints, ratFinalPoints := ratModel.CreateContainer(img)
-
 
 	startButton = widget.NewButton("Start Game", func() {
 		timer.Show()
 		rat.Show()
 		title.Hide()
 		startButton.Hide()
-		ratModel.PreStart()
+		ratModel.PreStart(end)
 		go ratModel.StartTimer(timer)
 		go ratModel.StartMove(rat)
 	})
@@ -53,18 +52,27 @@ func (s *MainScene) LoadGame () {
 	startButton.Resize(fyne.NewSize(150,30))
 	startButton.Move(fyne.NewPos(300,300))
 
-	go toggleVisibility(title, startButton)
+	go toggleVisibility(title, startButton, end)
 
 	s.window.SetContent(container.NewWithoutLayout(background, title, startButton, rat, timer, ratPoints, ratFinalPoints))
 }
 
-func toggleVisibility(label *fyne.Container, button *widget.Button) {
+func toggleVisibility(label *fyne.Container, button *widget.Button, s <-chan bool) {
     for {
-        time.Sleep(time.Second) // Espera 1 segundo (ajusta el intervalo de parpadeo según tus preferencias)
-        label.Hide()
-        button.Hide()
-        time.Sleep(time.Second * 3) // Espera otro segundo
-        label.Show()
-        button.Show()
+        select {
+		case ok := <-s:
+        	if ok {
+				label.Hide()
+				button.Hide()
+			}
+			return;
+		default:
+			time.Sleep(time.Second * 2)
+        	label.Hide()
+        	button.Hide()
+        	time.Sleep(time.Second * 1)
+        	label.Show()
+       	    button.Show()
+		}
     }
 }
