@@ -33,7 +33,7 @@ func (s *MainScene) LoadGame () {
 	timer := views.NewCanvaText("Tiempo Restante: 60", color.Black, 20, true, fyne.NewSize(100, 25), fyne.NewPos(0, 0))
 	timer.Hide()
 
-	img := canvas.NewImageFromURI(storage.NewFileURI("./assets/pelota.png"))
+	img := canvas.NewImageFromURI(storage.NewFileURI("./assets/rat.png"))
 	img.Resize(fyne.NewSize(50,40))
 
 	ratModel := models.NewRatModel(s.window)
