@@ -24,4 +24,3 @@ func AddContainerTitle(object *canvas.Text, size fyne.Size, position fyne.Positi
 	container.Move(position)
 	return container
 }
-

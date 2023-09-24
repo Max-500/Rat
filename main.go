@@ -10,7 +10,7 @@ import (
 
 func main() {
 	myApp := app.New()
-	myWindow := myApp.NewWindow("Juego Pelota")
+	myWindow := myApp.NewWindow("Atrapa la rata!!!")
 	myWindow.CenterOnScreen()
 	myWindow.SetFixedSize(true)
 	myWindow.Resize(fyne.NewSize(800, 600))
