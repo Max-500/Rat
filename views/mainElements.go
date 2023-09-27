@@ -10,12 +10,13 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-func NewCanvaText(text string, color color.Gray16, sizeWord uint, bold bool, size fyne.Size, position fyne.Position) *canvas.Text {
+func NewCanvaText(text string, color color.Gray16, sizeWord uint, bold bool, size fyne.Size, position fyne.Position, val bool) *canvas.Text {
 	customLabel := canvas.NewText(text, color)
 	customLabel.TextSize = float32(sizeWord)
 	customLabel.TextStyle.Bold = bold
 	customLabel.Resize(size)
 	customLabel.Move(position)
+	customLabel.Hidden = val
 	return customLabel
 }
 
