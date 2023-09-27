@@ -5,43 +5,39 @@ import (
 	"image/color"
 	"math/rand"
 	"myFirstGame/views"
-	"strconv"
+	"sync"
 	"time"
-
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
 )
 
-// AntModel es un modelo para el botón y la lógica relacionada
+var mutex = sync.Mutex{}
 type Rat struct {
     Button       *widget.Button
     Window       fyne.Window
     life         bool
     hitsReceived uint
-    timer        uint
-    counterText  *canvas.Text
-    counterFinal *canvas.Text
+    counterRat  *canvas.Text
+    counterFinalRat *canvas.Text
+    initTimer chan bool
 }
 
-// NeeRatModel crea una nueva instancia de AntModel con un botón y asigna la ventana
-func NewRatModel(window fyne.Window) *Rat {
+func NewRatModel(window fyne.Window, initTimer chan bool) *Rat {
     r := &Rat{
         Button:       widget.NewButton("", nil),
         Window:       window,
         life:         true,
         hitsReceived: 0,
-        timer:        10,
-        counterText: views.NewCanvaText("Hits: 0", color.Black, 20, true, fyne.NewSize(100, 20), fyne.NewPos(0, 25)),
-        counterFinal: views.NewCanvaText("", color.Black, 30, true, fyne.NewSize(100, 20), fyne.NewPos(300, 250)),
+        counterRat: views.NewCanvaText("Hits: 0", color.Black, 20, true, fyne.NewSize(100, 20), fyne.NewPos(0, 25)),
+        counterFinalRat: views.NewCanvaText("", color.Black, 30, true, fyne.NewSize(100, 20), fyne.NewPos(300, 250)),
+        initTimer: initTimer,
     }
 
-    r.counterText.Hide()
-
+    r.counterRat.Hide()
     r.Button.OnTapped = r.IncrementHits
     r.Button.Resize(fyne.NewSize(50, 40))
-
     return r
 }
 
@@ -49,10 +45,8 @@ func NewRatModel(window fyne.Window) *Rat {
 func (r *Rat) CreateContainer(components ...fyne.CanvasObject) (*fyne.Container, *fyne.Container, *fyne.Container)  {
     content := container.NewWithoutLayout(r.Button)
 	content.Hide()
-
-    content2 := container.NewWithoutLayout(r.counterText)
-
-    contentFinal := container.NewWithoutLayout(r.counterFinal)
+    content2 := container.NewWithoutLayout(r.counterRat)
+    contentFinal := container.NewWithoutLayout(r.counterFinalRat)
     
     for _, component := range components {
         content.Add(component)
@@ -65,10 +59,12 @@ func (r *Rat) CreateContainer(components ...fyne.CanvasObject) (*fyne.Container,
 }
 
 func (r *Rat) PreStart(e chan <- bool) {
-	r.Button.Enable()
-    r.counterText.Show()
-    e <- true
-    close(e)
+    if <- r.initTimer {
+        r.Button.Enable()
+        r.counterRat.Show()
+        e <- true
+        close(e)
+    }
 }
 
 func (r *Rat) StartMove (container *fyne.Container) {
@@ -80,24 +76,10 @@ func (r *Rat) StartMove (container *fyne.Container) {
 	}
 }
 
-func (r *Rat) StartTimer (timer *canvas.Text) {
-	for r.timer > 0 {
-        time.Sleep(time.Second * 1)
-        r.timer--
-        cadena := "Tiempo Restante: " + strconv.FormatUint(uint64(r.timer), 10) + " segundos"
-        timer.Text = cadena
-        timer.Refresh()
-    }
-    timer.Text = "Tu tiempo se agoto!!!"
-    r.life = false
-    r.Button.Disable()
-    r.counterFinal.Text = fmt.Sprintf("Puntuación Final: %d", r.hitsReceived)
-    r.counterFinal.Show()
-    r.counterFinal.Refresh()
-}
-
 func (r *Rat) IncrementHits() {
+    mutex.Lock()
     r.hitsReceived++
-    r.counterText.Text = fmt.Sprintf("Hits: %d", r.hitsReceived)
-    r.counterText.Refresh()
+    r.counterRat.Text = fmt.Sprintf("Hits: %d", r.hitsReceived)
+    mutex.Unlock()
+    r.counterRat.Refresh()
 }
