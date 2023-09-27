@@ -16,7 +16,6 @@ func NewCanvaText(text string, color color.Gray16, sizeWord uint, bold bool, siz
 	customLabel.TextStyle.Bold = bold
 	customLabel.Resize(size)
 	customLabel.Move(position)
-	customLabel.Hidden = val
 	return customLabel
 }
 

@@ -27,11 +27,12 @@ func (s *MainScene) LoadGame() {
 
 	text := views.NewCanvaText("Rata En Accion!!!", color.Black, 35, true, fyne.NewSize(300, 200), fyne.NewPos(200, 50), false)
 	title := views.AddContainerTitle(text, fyne.NewSize(300, 200), fyne.NewPos(200, 25))
-	timer := views.NewCanvaText("Tiempo Restante: 30 segunfos", color.Black, 20, true, fyne.NewSize(100, 25), fyne.NewPos(0, 0), false)
+	timer := views.NewCanvaText("Tiempo Restante: 30 segundos", color.Black, 20, true, fyne.NewSize(100, 25), fyne.NewPos(0, 0), false)
 	timer.Hide()
 	img := views.SetImage("./assets/rat.png", fyne.NewSize(50, 40))
 
 	counterRat:= views.NewCanvaText("Hits: 0", color.Black, 20, true, fyne.NewSize(100, 20), fyne.NewPos(0, 25), true)
+	counterRat.Hide()
     counterFinalRat:= views.NewCanvaText("", color.Black, 30, true, fyne.NewSize(100, 20), fyne.NewPos(250, 250), true)
 
 	ratModel := models.NewRatModel(s.window, timerInit, counterRat)

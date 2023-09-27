@@ -67,7 +67,7 @@ func (r *Rat) StartMove (container *fyne.Container) {
 		newX := float32(rand.Intn(750))
         newY := float32(rand.Intn(550))
         container.Move(fyne.NewPos(newX, newY))
-        time.Sleep(750 * time.Millisecond)
+        time.Sleep(900 * time.Millisecond)
 	}
 }
 
